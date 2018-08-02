@@ -1,0 +1,9 @@
+Projects/Demo/MDK-ARM/_build
+*.TMP
+*.uvguix.*
+JLinkSettings.ini
+JLinkLog.txt
+*.scvd
+*.d
+*.o
+*.crf
