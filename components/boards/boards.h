@@ -76,6 +76,8 @@
   #include "custom_board.h"
 #elif defined(BOARD_MICROBIT)
 	#include "../../BSP/MicroBit/microbit.h"
+#elif defined(BOARD_PUCK)
+	#include "../../BSP/Puck/Puck.h"
 #else
 #error "Board is not defined"
 

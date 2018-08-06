@@ -1,43 +1,3 @@
-/**
- * Copyright (c) 2014 - 2017, Nordic Semiconductor ASA
- * 
- * All rights reserved.
- * 
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- * 
- * 1. Redistributions of source code must retain the above copyright notice, this
- *    list of conditions and the following disclaimer.
- * 
- * 2. Redistributions in binary form, except as embedded into a Nordic
- *    Semiconductor ASA integrated circuit in a product or a software update for
- *    such product, must reproduce the above copyright notice, this list of
- *    conditions and the following disclaimer in the documentation and/or other
- *    materials provided with the distribution.
- * 
- * 3. Neither the name of Nordic Semiconductor ASA nor the names of its
- *    contributors may be used to endorse or promote products derived from this
- *    software without specific prior written permission.
- * 
- * 4. This software, with or without modification, must only be used with a
- *    Nordic Semiconductor ASA integrated circuit.
- * 
- * 5. Any software provided in binary form under this license must not be reverse
- *    engineered, decompiled, modified and/or disassembled.
- * 
- * THIS SOFTWARE IS PROVIDED BY NORDIC SEMICONDUCTOR ASA "AS IS" AND ANY EXPRESS
- * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY, NONINFRINGEMENT, AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL NORDIC SEMICONDUCTOR ASA OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
- * GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
- * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
- */
-
 #include "nrf_esb.h"
 
 #include <stdbool.h>
@@ -104,34 +64,36 @@ void system_off( void )
     while (true);
 }
 
+volatile nrf_esb_evt_id_t lastEsbEvent = 0xFF;
+
 
 void nrf_esb_event_handler(nrf_esb_evt_t const * p_event)
 {
-    switch (p_event->evt_id)
-    {
-        case NRF_ESB_EVENT_TX_SUCCESS:
-					printf("[ESB] TX OK\r\n");
-            break;
-        case NRF_ESB_EVENT_TX_FAILED:
-					printf("[ESB] TX FAIL\r\n");
-            (void) nrf_esb_flush_tx();
-            break;
-        case NRF_ESB_EVENT_RX_RECEIVED:
-					printf("[ESB] RX Received\r\n");
-            // Get the most recent element from the RX FIFO.
-            while (nrf_esb_read_rx_payload(&rx_payload) == NRF_SUCCESS) ;
+	switch (p_event->evt_id) {
+		case NRF_ESB_EVENT_TX_SUCCESS:
+			printf("[ESB] TX OK\r\n");
+			break;
+		case NRF_ESB_EVENT_TX_FAILED:
+			printf("[ESB] TX FAIL\r\n");
+			(void) nrf_esb_flush_tx();
+			break;
+		case NRF_ESB_EVENT_RX_RECEIVED:
+			printf("[ESB] RX Received\r\n");
+			// Get the most recent element from the RX FIFO.
+			while (nrf_esb_read_rx_payload(&rx_payload) == NRF_SUCCESS) ;
 
-            // For each LED, set it as indicated in the rx_payload, but invert it for the button
-            // which is pressed. This is because the ack payload from the PRX is reflecting the
-            // state from before receiving the packet.
-//            nrf_gpio_pin_write(LED_1, !( ((rx_payload.data[0] & 0x01) == 0) ^ (button_state_1 == BTN_PRESSED)) );
-//            nrf_gpio_pin_write(LED_2, !( ((rx_payload.data[0] & 0x02) == 0) ^ (button_state_2 == BTN_PRESSED)) );
-//            nrf_gpio_pin_write(LED_3, !( ((rx_payload.data[0] & 0x04) == 0) ^ (button_state_3 == BTN_PRESSED)) );
-//            nrf_gpio_pin_write(LED_4, !( ((rx_payload.data[0] & 0x08) == 0) ^ (button_state_4 == BTN_PRESSED)) );
-            break;
-    }
-
-    esb_completed = true;
+			// For each LED, set it as indicated in the rx_payload, but invert it for the button
+			// which is pressed. This is because the ack payload from the PRX is reflecting the
+			// state from before receiving the packet.
+			//            nrf_gpio_pin_write(LED_1, !( ((rx_payload.data[0] & 0x01) == 0) ^ (button_state_1 == BTN_PRESSED)) );
+			//            nrf_gpio_pin_write(LED_2, !( ((rx_payload.data[0] & 0x02) == 0) ^ (button_state_2 == BTN_PRESSED)) );
+			//            nrf_gpio_pin_write(LED_3, !( ((rx_payload.data[0] & 0x04) == 0) ^ (button_state_3 == BTN_PRESSED)) );
+			//            nrf_gpio_pin_write(LED_4, !( ((rx_payload.data[0] & 0x08) == 0) ^ (button_state_4 == BTN_PRESSED)) );
+		break;
+	}
+	
+	lastEsbEvent = p_event->evt_id;
+	esb_completed = true;
 }
 
 
@@ -212,6 +174,13 @@ uint32_t gpio_check_and_esb_tx()
 
 void gpio_init( void )
 {
+#if LEDS_NUMBER > 0
+    //nrf_gpio_range_cfg_output(8, 31);
+    bsp_board_leds_init();
+    nrf_gpio_pin_write(BSP_LED_0, LED_OFF);
+    nrf_gpio_pin_write(BSP_LED_1, LED_OFF);
+#endif
+	
 	nrf_gpio_cfg_sense_input(BUTTON_1, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
 	nrf_gpio_cfg_sense_input(BUTTON_2, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
 
@@ -275,38 +244,65 @@ void uart_init(void)
 
 int main(void)
 {
-    uint32_t err_code;
-    // Initialize
-    clocks_start();
-    err_code = esb_init();
-    APP_ERROR_CHECK(err_code);
+	uint32_t err_code;
+	// Initialize
+	clocks_start();
+	err_code = esb_init();
+	APP_ERROR_CHECK(err_code);
 
-    gpio_init();
+	gpio_init();
 	
 	uart_init();
 	printf("Hello World\r\n");
 
-    // Recover state if the device was woken from System OFF.
-    recover_state();
+	// Recover state if the device was woken from System OFF.
+	recover_state();
 
-    // Check state of all buttons and send an esb packet with the button press if there is exactly one.
-    err_code = gpio_check_and_esb_tx();
-    APP_ERROR_CHECK(err_code);
+	// Check state of all buttons and send an esb packet with the button press if there is exactly one.
+	err_code = gpio_check_and_esb_tx();
+	APP_ERROR_CHECK(err_code);
 
-    while (true)
-    {
-        // Wait for esb completed and all buttons released before going to system off.
-        if (esb_completed)
-        {
-            if (nrf_gpio_pin_read(BUTTON_1) == BTN_RELEASED &&
-                nrf_gpio_pin_read(BUTTON_2) == BTN_RELEASED && 1
-//                nrf_gpio_pin_read(BUTTON_3) == BTN_RELEASED &&
-//                nrf_gpio_pin_read(BUTTON_4) == BTN_RELEASED
-               )
-            {
-                system_off();
-            }
-        }
-    }
+	while (true) {
+
+		// Wait for esb completed and all buttons released before going to system off.
+		if (esb_completed) {
+			#if LEDS_NUMBER > 0
+			if(lastEsbEvent == NRF_ESB_EVENT_TX_SUCCESS) {
+				nrf_gpio_pin_write(BSP_LED_0, LED_ON);
+				nrf_gpio_pin_write(BSP_LED_1, LED_ON);
+				nrf_delay_ms(100);
+				nrf_gpio_pin_write(BSP_LED_0, LED_OFF);
+				nrf_gpio_pin_write(BSP_LED_1, LED_OFF);
+			}else if(lastEsbEvent == NRF_ESB_EVENT_RX_RECEIVED) {
+				for(int i=0; i< 2;i++) {
+					nrf_gpio_pin_write(BSP_LED_0, LED_ON);
+					nrf_gpio_pin_write(BSP_LED_1, LED_ON);
+					nrf_delay_ms(100);
+					nrf_gpio_pin_write(BSP_LED_0, LED_OFF);
+					nrf_gpio_pin_write(BSP_LED_1, LED_OFF);
+					nrf_delay_ms(100);
+				}
+			}else if(lastEsbEvent == NRF_ESB_EVENT_TX_FAILED) {
+				for(int i=0;i< 5; i++) {
+					nrf_gpio_pin_write(BSP_LED_0, LED_ON);
+					nrf_gpio_pin_write(BSP_LED_1, LED_OFF);
+					nrf_delay_ms(20);
+					nrf_gpio_pin_write(BSP_LED_0, LED_OFF);
+					nrf_gpio_pin_write(BSP_LED_1, LED_ON);
+					nrf_delay_ms(20);
+				}
+				nrf_gpio_pin_write(BSP_LED_1, LED_OFF);
+			}
+			#endif
+
+			if (nrf_gpio_pin_read(BUTTON_1) == BTN_RELEASED &&
+					nrf_gpio_pin_read(BUTTON_2) == BTN_RELEASED && 1
+			//                nrf_gpio_pin_read(BUTTON_3) == BTN_RELEASED &&
+			//                nrf_gpio_pin_read(BUTTON_4) == BTN_RELEASED
+				) {
+					system_off();
+			}
+		}
+	}
 }
 /*lint -restore */

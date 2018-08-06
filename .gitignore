@@ -7,3 +7,15 @@ JLinkLog.txt
 *.d
 *.o
 *.crf
+*.htm
+*.axf
+*.hex
+*.dep
+*.lnp
+*.lst
+*.sct
+*.map
+*.uvoptx
+*.uvoptx
+*.uvoptx
+*.iex

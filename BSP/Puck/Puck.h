@@ -51,6 +51,8 @@ extern "C" {
 #define LED_2          9
 
 #define LEDS_ACTIVE_STATE 1
+#define LED_ON          1
+#define LED_OFF         0
 
 #define LEDS_LIST { LED_1, LED_2}
 

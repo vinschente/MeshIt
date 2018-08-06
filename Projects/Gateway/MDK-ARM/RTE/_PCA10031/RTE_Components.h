@@ -4,7 +4,7 @@
  *      *** Do not modify ! ***
  *
  * Project: 'Gateway' 
- * Target:  'PCA10028' 
+ * Target:  'PCA10031' 
  */
 
 #ifndef RTE_COMPONENTS_H

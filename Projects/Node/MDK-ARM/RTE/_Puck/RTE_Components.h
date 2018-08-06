@@ -3,8 +3,8 @@
  * Auto generated Run-Time-Environment Component Configuration File
  *      *** Do not modify ! ***
  *
- * Project: 'Gateway' 
- * Target:  'PCA10028' 
+ * Project: 'Node' 
+ * Target:  'Puck' 
  */
 
 #ifndef RTE_COMPONENTS_H
