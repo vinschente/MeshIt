@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-#include "network_phy.h"
+#include "network_hal.h"
 
 typedef enum {
 	NET_STATE_RESET      = 0x00,
@@ -42,15 +42,16 @@ typedef struct {
 
 typedef struct {
 	Network_Init_t Init;
-	Network_Phy_t  *Phy;
+	Network_Driver_t  *Driver;
 
-	
 	Network_State_t State;
-	
 	uint32_t        ErrorCode;
 }NetworkHandler_t;
 
 void Network_Init(NetworkHandler_t *hNet);
+
+void Network_Manage(NetworkHandler_t *hNet);
+
 void Network_SendBuffer(NetworkHandler_t *hNet, uint16_t dstAddr, uint8_t buffer, uint16_t size);
 
 

@@ -1,7 +1,8 @@
-#ifndef __NETWORK_PHY_H__
-#define __NETWORK_PHY_H__
+#ifndef __NETWORK_HAL_H__
+#define __NETWORK_HAL_H__
 
 #include <stdint.h>
+#include "nrf_esb.h"
 
 typedef enum {
 	NET_OK = 0,
@@ -16,10 +17,12 @@ typedef struct {
 	Status_t (* Send) (uint8_t *buffer, uint16_t size);
 	uint8_t  (* Receive) (uint8_t *buffer, uint16_t size);
 	
+	nrf_esb_payload_t* (* hasReceived) (void);
+	
 	void (* Start_RX) (void);
 	void (* Stop_RX) (void);
-}Network_Phy_t;
+}Network_Driver_t;
 
-extern Network_Phy_t NetPhy;
+extern Network_Driver_t NetDriver;
 
-#endif /* __NETWORK_PHY_H__ */
+#endif /* __NETWORK_HAL_H__ */

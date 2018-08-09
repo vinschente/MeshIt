@@ -508,6 +508,21 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>MeshIt</GroupName>
+          <Files>
+            <File>
+              <FileName>network.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\Network\network.c</FilePath>
+            </File>
+            <File>
+              <FileName>network_hal_nrf51.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\Network\network_hal_nrf51.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>::CMSIS</GroupName>
         </Group>
         <Group>
@@ -845,7 +860,7 @@
               <MiscControls></MiscControls>
               <Define>NRF51422 BOARD_PCA10031 BSP_DEFINES_ONLY ESB_PRESENT NRF51</Define>
               <Undefine></Undefine>
-              <IncludePath>..\..\..\components;..\..\..\components\boards;..\..\..\components\drivers_nrf\common;..\..\..\components\drivers_nrf\delay;..\..\..\components\drivers_nrf\hal;..\..\..\components\drivers_nrf\nrf_soc_nosd;..\..\..\components\drivers_nrf\uart;..\..\..\components\libraries\bsp;..\..\..\components\libraries\fifo;..\..\..\components\libraries\log;..\..\..\components\libraries\log\src;..\..\..\components\libraries\uart;..\..\..\components\libraries\util;..\..\..\components\proprietary_rf\esb;..\..\..\components\toolchain;..\..\..\external\segger_rtt;..</IncludePath>
+              <IncludePath>..\..\..\components;..\..\..\components\boards;..\..\..\components\drivers_nrf\common;..\..\..\components\drivers_nrf\delay;..\..\..\components\drivers_nrf\hal;..\..\..\components\drivers_nrf\nrf_soc_nosd;..\..\..\components\drivers_nrf\uart;..\..\..\components\libraries\bsp;..\..\..\components\libraries\fifo;..\..\..\components\libraries\log;..\..\..\components\libraries\log\src;..\..\..\components\libraries\uart;..\..\..\components\libraries\util;..\..\..\components\proprietary_rf\esb;..\..\..\components\toolchain;..\..\..\external\segger_rtt;..;..\..\..\Network</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -1013,6 +1028,21 @@
               <FileName>SEGGER_RTT_printf.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\external\segger_rtt\SEGGER_RTT_printf.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>MeshIt</GroupName>
+          <Files>
+            <File>
+              <FileName>network.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\Network\network.c</FilePath>
+            </File>
+            <File>
+              <FileName>network_hal_nrf51.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\Network\network_hal_nrf51.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1522,6 +1552,21 @@
               <FileName>SEGGER_RTT_printf.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\external\segger_rtt\SEGGER_RTT_printf.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>MeshIt</GroupName>
+          <Files>
+            <File>
+              <FileName>network.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\Network\network.c</FilePath>
+            </File>
+            <File>
+              <FileName>network_hal_nrf51.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\Network\network_hal_nrf51.c</FilePath>
             </File>
           </Files>
         </Group>

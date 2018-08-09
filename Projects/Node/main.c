@@ -276,12 +276,13 @@ int main(void)
 			}else if(lastEsbEvent == NRF_ESB_EVENT_RX_RECEIVED) {
 				for(int i=0; i< 2;i++) {
 					nrf_gpio_pin_write(BSP_LED_0, LED_ON);
-					nrf_gpio_pin_write(BSP_LED_1, LED_ON);
-					nrf_delay_ms(100);
-					nrf_gpio_pin_write(BSP_LED_0, LED_OFF);
 					nrf_gpio_pin_write(BSP_LED_1, LED_OFF);
 					nrf_delay_ms(100);
+					nrf_gpio_pin_write(BSP_LED_0, LED_OFF);
+					nrf_gpio_pin_write(BSP_LED_1, LED_ON);
+					nrf_delay_ms(100);
 				}
+				nrf_gpio_pin_write(BSP_LED_1, LED_OFF);
 			}else if(lastEsbEvent == NRF_ESB_EVENT_TX_FAILED) {
 				for(int i=0;i< 5; i++) {
 					nrf_gpio_pin_write(BSP_LED_0, LED_ON);
