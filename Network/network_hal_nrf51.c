@@ -8,19 +8,34 @@
 #define LED_ON          0
 #define LED_OFF         1
 
+typedef enum {
+	NRF51_IDLE,
+	NRF51_RX,
+	NRF51_STATE_BUSY_TX,
+	NRF51_STATE_TX_SUCCESS,
+	NRF51_STATE_TX_FAILED,
+	NRF51_STATE_RX_RECEIVED,
+}NRF51_HAL_State_t;
+
 
 static nrf_esb_payload_t tx_payload;
 static nrf_esb_payload_t rx_payload;
 
+volatile static NRF51_HAL_State_t State = NRF51_IDLE;
+
 Status_t NRF51_RF_Init(void);
 void NRF51_RF_Start_RX(void);
 void NRF51_RF_Stop_RX(void);
+Status_t NRF51_RF_Send(uint8_t *pBuffer, uint16_t size, bool ack);
 nrf_esb_payload_t* NRF51_RF_hasReceived(void);
+
+static void NRF51_HAL_LowPower(void);
 
 Network_Driver_t NetDriver = {
 	.Init        = NRF51_RF_Init,
 	.Start_RX    = NRF51_RF_Start_RX,
 	.Stop_RX     = NRF51_RF_Stop_RX,
+	.Send        = NRF51_RF_Send,
 	.hasReceived = NRF51_RF_hasReceived,
 };
 
@@ -29,6 +44,9 @@ static void nrf_esb_event_handler(nrf_esb_evt_t const * p_event);
 Status_t NRF51_RF_Init(void)
 {
     uint32_t err_code;
+	
+	State = NRF51_IDLE;
+	
     uint8_t base_addr_0[4] = {0xE7, 0xE7, 0xE7, 0xE7};
     uint8_t base_addr_1[4] = {0xC2, 0xC2, 0xC2, 0xC2};
     uint8_t addr_prefix[8] = {0xE7, 0xC2, 0xC3, 0xC4, 0xC5, 0xC6, 0xC7, 0xC8 };
@@ -68,6 +86,37 @@ void NRF51_RF_Stop_RX(void)
 	nrf_esb_stop_rx();
 }
 
+
+
+Status_t NRF51_RF_Send(uint8_t *pBuffer, uint16_t size, bool ack)
+{
+	uint32_t errorcode;
+	
+	tx_payload.length = size;
+	tx_payload.noack = ack?0:1;
+	memcpy(tx_payload.data, pBuffer, size);
+	errorcode = nrf_esb_write_payload(&tx_payload);
+	if(errorcode != NRF_SUCCESS) {
+		// TODO
+		printf("[ESB HAL] Send nrf_esb_write_payload error\r\n");
+		return NET_ERROR_HAL;
+	}
+	
+	if(tx_payload.noack == true) {
+		return NET_OK;
+	}
+	
+	while(State == NRF51_STATE_BUSY_TX) {
+		NRF51_HAL_LowPower();
+	}
+	
+	if(State == NRF51_STATE_TX_SUCCESS || State == NRF51_STATE_RX_RECEIVED) {
+		return NET_OK;
+	}else {
+		return NET_ERROR_NAK;
+	}
+}
+
 nrf_esb_payload_t* NRF51_RF_hasReceived(void)
 {
 	if(nrf_esb_read_rx_payload(&rx_payload) == NRF_SUCCESS) {
@@ -104,14 +153,23 @@ static void nrf_esb_event_handler(nrf_esb_evt_t const * p_event)
 	switch (p_event->evt_id) {
 		case NRF_ESB_EVENT_TX_SUCCESS:
 			NRF_LOG_DEBUG("SUCCESS\r\n");
+			State = NRF51_STATE_TX_SUCCESS;
 			break;
 		case NRF_ESB_EVENT_TX_FAILED:
 			NRF_LOG_DEBUG("FAILED\r\n");
 			(void) nrf_esb_flush_tx();
+			State = NRF51_STATE_TX_FAILED;
 			break;
 		case NRF_ESB_EVENT_RX_RECEIVED:
 			NRF_LOG_DEBUG("RX RECEIVED\r\n");
+			State = NRF51_STATE_RX_RECEIVED;
 			break;
 	}
 }
 
+static void NRF51_HAL_LowPower(void)
+{
+	__WFE();
+	__SEV();
+	__WFE();
+}
