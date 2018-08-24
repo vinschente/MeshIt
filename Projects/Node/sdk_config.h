@@ -9,6 +9,82 @@
 // <h> nRF_Drivers 
 
 //==========================================================
+// <e> ADC_ENABLED - nrf_drv_adc - Driver for ADC peripheral (nRF51)
+//==========================================================
+#ifndef ADC_ENABLED
+#define ADC_ENABLED 1
+#endif
+#if  ADC_ENABLED
+// <o> ADC_CONFIG_IRQ_PRIORITY  - Interrupt priority
+ 
+
+// <i> Priorities 0,2 (nRF51) and 0,1,4,5 (nRF52) are reserved for SoftDevice
+// <0=> 0 (highest) 
+// <1=> 1 
+// <2=> 2 
+// <3=> 3 
+
+#ifndef ADC_CONFIG_IRQ_PRIORITY
+#define ADC_CONFIG_IRQ_PRIORITY 3
+#endif
+
+// <e> ADC_CONFIG_LOG_ENABLED - Enables logging in the module.
+//==========================================================
+#ifndef ADC_CONFIG_LOG_ENABLED
+#define ADC_CONFIG_LOG_ENABLED 0
+#endif
+#if  ADC_CONFIG_LOG_ENABLED
+// <o> ADC_CONFIG_LOG_LEVEL  - Default Severity level
+ 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
+
+#ifndef ADC_CONFIG_LOG_LEVEL
+#define ADC_CONFIG_LOG_LEVEL 3
+#endif
+
+// <o> ADC_CONFIG_INFO_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef ADC_CONFIG_INFO_COLOR
+#define ADC_CONFIG_INFO_COLOR 0
+#endif
+
+// <o> ADC_CONFIG_DEBUG_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef ADC_CONFIG_DEBUG_COLOR
+#define ADC_CONFIG_DEBUG_COLOR 0
+#endif
+
+#endif //ADC_CONFIG_LOG_ENABLED
+// </e>
+
+#endif //ADC_ENABLED
+// </e>
+
+//==========================================================
 // <e> PERIPHERAL_RESOURCE_SHARING_ENABLED - nrf_drv_common - Peripheral drivers common module
 //==========================================================
 #ifndef PERIPHERAL_RESOURCE_SHARING_ENABLED

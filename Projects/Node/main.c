@@ -245,6 +245,11 @@ void uart_init(void)
 int main(void)
 {
 	uint32_t err_code;
+	
+	adc_GetVDD();
+
+		while(1);
+	
 	// Initialize
 	clocks_start();
 	err_code = esb_init();
@@ -254,6 +259,7 @@ int main(void)
 	
 	uart_init();
 	printf("Hello World\r\n");
+	
 
 	// Recover state if the device was woken from System OFF.
 	recover_state();

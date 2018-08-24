@@ -19,3 +19,10 @@ JLinkLog.txt
 *.uvoptx
 *.uvoptx
 *.iex
+examples/peripheral/adc/pca10028/blank/arm5_no_packs/adc_pca10028.uvoptx
+examples/peripheral/adc/pca10028/blank/arm5_no_packs/adc_pca10028.uvprojx
+examples/peripheral/adc/pca10028/blank/arm5_no_packs/RTE/Device/nRF51422_xxAC/arm_startup_nrf51.s
+examples/peripheral/adc/pca10028/blank/arm5_no_packs/RTE/Device/nRF51422_xxAC/system_nrf51.c
+examples/peripheral/adc/pca10028/blank/arm5_no_packs/RTE/_nrf51422_xxac/RTE_Components.h
+examples/peripheral/adc/pca10028/blank/arm5_no_packs/adc_pca10028.uvprojx
+examples/peripheral/adc/pca10028/blank/arm5_no_packs/adc_pca10028.uvoptx
