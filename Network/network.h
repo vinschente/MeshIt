@@ -5,6 +5,12 @@
 
 #include "network_hal.h"
 
+#define MESSAGE_SIZE 32
+
+typedef enum {
+	NET_OK_MEEEEEEP,
+}Network_Error_t;
+
 typedef enum {
 	NET_STATE_RESET      = 0x00,
 	NET_STATE_READY      = 0x01,
@@ -27,7 +33,13 @@ typedef struct {
 	uint16_t dstAddr;
 	uint16_t srcAddr;
 	uint16_t flags;
+	uint8_t  payload[1];
 }Network_Message_t;
+
+typedef struct{
+	uint8_t size;
+	uint8_t payload[1];
+}Message_Payload_t;
 
 typedef struct {
 	uint16_t myAddr;
@@ -52,7 +64,7 @@ void Network_Init(NetworkHandler_t *hNet);
 
 void Network_Manage(NetworkHandler_t *hNet);
 
-void Network_SendBuffer(NetworkHandler_t *hNet, uint16_t dstAddr, uint8_t buffer, uint16_t size);
+void Network_SendBuffer(NetworkHandler_t *hNet, uint16_t dstAddr, uint8_t *buffer, uint16_t size);
 
 
 #endif /* __NETWORK_H__ */

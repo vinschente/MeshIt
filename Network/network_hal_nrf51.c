@@ -59,6 +59,7 @@ Status_t NRF51_RF_Init(void)
     nrf_esb_config.selective_auto_ack       = 0;
     nrf_esb_config.bitrate                  = NRF_ESB_BITRATE_2MBPS;
     nrf_esb_config.event_handler            = nrf_esb_event_handler;
+		nrf_esb_config.selective_auto_ack       = true;
 
     err_code = nrf_esb_init(&nrf_esb_config);
     VERIFY_SUCCESS(err_code);
@@ -86,8 +87,6 @@ void NRF51_RF_Stop_RX(void)
 	nrf_esb_stop_rx();
 }
 
-
-
 Status_t NRF51_RF_Send(uint8_t *pBuffer, uint16_t size, bool ack)
 {
 	uint32_t errorcode;
@@ -97,13 +96,16 @@ Status_t NRF51_RF_Send(uint8_t *pBuffer, uint16_t size, bool ack)
 	memcpy(tx_payload.data, pBuffer, size);
 	errorcode = nrf_esb_write_payload(&tx_payload);
 	if(errorcode != NRF_SUCCESS) {
-		// TODO
+		// Clean up complete TX FIFO
+		nrf_esb_flush_tx();
 		printf("[ESB HAL] Send nrf_esb_write_payload error\r\n");
 		return NET_ERROR_HAL;
 	}
 	
 	if(tx_payload.noack == true) {
-		return NET_OK;
+		// Remove payload from TX FIFO
+		nrf_esb_pop_tx();
+		return NET_SEND_OK_NOACK;
 	}
 	
 	while(State == NRF51_STATE_BUSY_TX) {
@@ -111,9 +113,10 @@ Status_t NRF51_RF_Send(uint8_t *pBuffer, uint16_t size, bool ack)
 	}
 	
 	if(State == NRF51_STATE_TX_SUCCESS || State == NRF51_STATE_RX_RECEIVED) {
-		return NET_OK;
+		return NET_SEND_OK;
 	}else {
-		return NET_ERROR_NAK;
+		nrf_esb_pop_tx();
+		return NET_SEND_ERROR_NOACK;
 	}
 }
 

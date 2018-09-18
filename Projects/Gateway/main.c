@@ -100,8 +100,11 @@ void power_manage( void )
     __WFE();
 }
 
+uint8_t txBuffer[MESSAGE_SIZE];
+
 NetworkHandler_t hNetwork = {
 	.Init.DeviceType = DEVICE_GATEWAY,
+	.Init.TxBufferPtr = txBuffer,
 };
 
 int main(void)
@@ -125,9 +128,19 @@ int main(void)
 		nrf_delay_ms(125);
 	}
 
+
 	while (true) {
+		static int tick = 0;
 		Network_Manage(&hNetwork);
-		power_manage();		
+		
+		if(tick%100 == 0) {
+			Network_SendBuffer(&hNetwork, 0xB00B, NULL, 0);
+		}
+		tick++;
+		
+		nrf_delay_ms(10);
+		
+		//power_manage();		
 	}
 }
 /*lint -restore */
